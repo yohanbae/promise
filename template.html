@@ -1,0 +1,48 @@
+<div>
+	<div class="temp-head animated fadeInDown">
+		<div class="row">
+			<div class="col-2 thetitle">EDIT TEMPLATE</div>
+			<div class="col-10 text-right"><a ui-sref="main()">GO BACK</a></div>
+		</div>
+	</div>
+
+	<form name="userForm" ng-submit="handleSubmit(userForm.$valid)" novalidate>
+	<div class="temp-box animated fadeInUp">
+		<div ng-repeat="template in templates track by $index">
+			<div class="temp-day">
+				<h6>{{template.name}}</h6>
+
+				<div class="row col-title">
+					<div class="col-8">TASK NAME</div>
+					<div class="col-3">TOTAL QTY</div>
+					<div class="col-1"></div>
+				</div>
+
+				<div ng-repeat="event in template.events track by $index">
+					<div class="row">
+						<div class="col-8">
+							<input class="eve" type="text" ng-model="event.eve" ng-required="true" placeholder="name the new task">							
+						</div>
+						<div class="col-3">
+							<input class="goal" type="number" min=1 ng-model="event.goal">
+						</div>
+						<div class="col-1">
+							<span ng-click="handleRemove(template.code, $index)">X</span>
+						</div>
+					</div>
+					
+				</div>
+				<span ng-click="handleAddEvent(template.code)">ADD EVENT</span>
+			</div>
+
+		</div>
+	<p>{{msg}}</p>
+	<button type="submit" ng-disabled="userForm.$invalid">SUBMIT</button>
+
+
+
+	</div>
+
+	</form>
+
+</div>

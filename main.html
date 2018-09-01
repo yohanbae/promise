@@ -1,0 +1,171 @@
+
+		<div>
+			<div class="cal-head animated fadeInDown">
+				<div class="row p-3">
+					<div class="col-2 thetitle">G-PROMISE</div>
+					<div class="col-2 dal text-right"><a ng-click="prevMonth()">PREV</a></div>
+					<div class="col-4 dal text-center monthtitle">{{thisYear}} {{thisMonthName}}</div>
+					<div class="col-2 dal text-left"><a ng-click="nextMonth()">NEXT</a></div>
+					<div class="col-2 dlink text-right" data-toggle="tooltip" data-placement="bottom" title="You can create DAILY ROUTINE here"><a ui-sref="template()">EDIT TEMPLATE <i class="far fa-edit"></i></a></div>
+				</div>
+			</div>
+
+			<div class="cal-wrap animated fadeInLeft">
+				<div class="theday-top">SUN</div>
+				<div class="theday-top">MON</div>
+				<div class="theday-top">TUE</div>								
+				<div class="theday-top">WED</div>
+				<div class="theday-top">THU</div>
+				<div class="theday-top">FRI</div>												
+				<div class="theday-top">SAT</div>																
+				<div ng-repeat="today in todays track by $index">
+					<div class="theday" ng-click="handleDay(thisYear, thisMonth, today.today)" ng-class="{'ttoday': today.today==dayPicked && thisYear == yearPicked && thisMonth == monthPicked}">
+						<p class="thedayname" ng-if="today.name!=0">{{today.today}}</p>
+						<div ng-repeat="event in today.events track by $index" ng-if="today.events.length>0">
+							<p ng-click="handleEvent(thisYear, thisMonth, today.today, $index)">{{event.eve}}<p>
+						</div>
+						<div class="percent" style="height:{{today.percent}}%;" ng-class="{'full-percent':today.percent == 100}"></div>
+					</div>
+				</div>
+			</div>
+
+
+
+			<div class="pick-box animated fadeInRight"><!-- THIS IS WEEKLY VIEW -->
+				<p class="pick-title" ng-if="yearPicked>0">{{yearPicked}}.{{monthPicked}}.{{dayPicked}} {{dayName}}</p>
+				<p class="pick-percent">{{dayPercent}}</p>
+				<p class="pick-percent2">percent done today</p>
+
+				<div class="add-block" data-toggle="tooltip" data-placement="left" title="You can add new task here!">
+					<div class="row desc">
+						<div class="col-6">TASK NAME</div>
+						<div class="col-6">TOTAL QTY</div>
+					</div>					
+					<div class="row">
+						<div class="col-6">
+							<input type="text" placeholder="add event" ng-model="newEvent">
+						</div>
+						<div class="col-3">
+							<input type="number" class="event-num" value=1 min=1 ng-model="newEventGoal">								
+						</div>
+						<div class="col-3">
+							<button ng-click="handleAddEvent()">ENTER</button>	
+						</div>
+					</div>
+				</div><!-- ADD BlOCK CLOSED -->
+
+				<div class="event-block" data-toggle="tooltip" data-placement="left" title="You can record how many tasks are done today via editing QTY number. Let's finish all task of today and make 100% accomplishment!">
+					<div class="row event-header" ng-if="currentPickedDayEvents.length>0">
+						<div class="col-5">EVENT NAME</div>
+						<div class="col-3">QTY</div>
+						<div class="col-4">GOAL TODAY</div>
+					</div>
+					<div ng-repeat="event in currentPickedDayEvents track by $index" ng-if="currentPickedDayEvents.length>0">
+						<div class="row" ng-class="{'complete': currentPickedDayEvents[$index].goal == currentPickedDayEvents[$index].cur}"><!-- -->
+							<div class="col-5">
+								<input type="text" class="event-name" ng-model="currentPickedDayEvents[$index].eve" ng-blur="handleEventUpdate($index)">
+							</div>
+							<div class="col-3">
+								<input type="number" class="event-num" ng-model="currentPickedDayEvents[$index].cur" min="0" max="{{currentPickedDayEvents[$index].goal}}" ng-blur="handleEventUpdate($index)">
+							</div>
+							<div class="col-3">
+								<input type="number" class="event-num" ng-model="currentPickedDayEvents[$index].goal" min="{{currentPickedDayEvents[$index].cur}}" ng-blur="handleEventUpdate($index)">
+							</div>					
+							<div class="col-1">	
+								<span ng-click="handleEventDelete($index)">X</span>
+							</div>
+						</div><!-- ROW END -->
+					</div><!-- REPEAT END -->
+				</div><!-- EVENT BLOCK CLOSED -->
+
+				<div class="event-block" ng-if="templates.length>0" data-toggle="tooltip" data-placement="left" title="This is your daily routines. You can edit the repeating events via EDIT TEMPLATE BUTTON at the top.">
+					<div class="row event-header" ng-if="templates.length>0">
+						<div class="col-5">REGULAR {{dayName}} EVENT</div>
+						<div class="col-3">QTY</div>
+						<div class="col-4">TOTAL</div>
+					</div>
+
+					<div ng-repeat="template in templates track by $index">
+						<div class="row" ng-class="{'complete': template.goal == template.cur}">
+							<div class="col-5">
+								<input class="event-name" type="text" ng-model="template.eve" ng-blur="handleTempUpdate($index)">
+							</div>
+							<div class="col-3">
+								<input class="event-num" type="number" ng-model="template.cur" min="0" max="{{template.goal}}" ng-blur="handleTempUpdate($index)">	
+							</div>
+							<div class="col-3">
+								<input class="event-num" type="number" ng-model="template.goal" min="{{template.cur}}" ng-blur="handleTempUpdate($index)">
+							</div>
+							<div class="col-1">
+								<span ng-click="handleTempRemove($index)">X</span>
+							</div>
+						</div>
+
+					</div><!-- REPEAT DONE -->
+				</div><!-- EVENT BLOoCK cLOSE -->
+
+				<textarea class="diary-box" placeholder="Add your thoughts for today!" ng-model="currentNote" ng-blur="handleNoteUpdate()" data-toggle="tooltip" data-placement="left" title="record anything here"></textarea>
+				<!-- Button trigger modal -->
+				<button class="readmore" type="button" data-toggle="modal" data-target="#readnotes" ng-click="getNotes()">
+				  READ SEVEN NOTES
+				</button>				
+				<button class="readmore" type="button" data-toggle="modal" data-target="#readnotes" ng-click="getNotesTw()">
+				  READ TWENTY NOTES
+				</button>					
+			</div><!-- pick-box Close -->
+
+			<div class="month-box animated fadeInRight" data-toggle="tooltip" data-placement="left" title="Monthly NOTE. Through this note, you can remind any important ideas anytime"><!-- MONTHLY VIEW -->
+				<h6>{{thisMonthName}} NOTE</h6>
+				<textarea class="note-box" ng-model="monthNote" ng-blur="handleMonthNote()"></textarea>
+				<button class="readmore" type="button" data-toggle="modal" data-target="#readnotes" ng-click="getMonthNotes()">CHeck 12 notes</button>
+
+			</div><!-- Month Box Close -->
+				
+
+
+
+
+			<!-- Modal -->
+			<div class="modal fade" id="readnotes" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			  <div class="modal-dialog" role="document">
+			    <div class="modal-content">
+			      <div class="modal-header">
+			        <h5 class="modal-title" id="exampleModalLongTitle">notes</h5>
+			        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+			          <span aria-hidden="true">&times;</span>
+			        </button>
+			      </div>
+			      <div class="modal-body">
+			        <div class="read-note" ng-repeat="item in noteDay track by $index">
+			        	<h6>note : {{item.code}}</h6>
+			        	<p ng-if="item.note">{{item.note}}</p>
+			        	<p ng-if="item.mnote">{{item.mnote}}</p>
+			        </div>
+			      </div>
+			      <div class="modal-footer">
+
+			      </div>
+			    </div>
+			  </div>
+			</div>
+
+
+
+		</div>
+
+		<script>
+			$(function () {
+			  $('[data-toggle="tooltip"]').tooltip()
+			});
+
+			$('.month-box').mouseenter(function(){
+				$('.month-box').css({'right':'0'});
+				$('.pick-box').css({'right':'30vw'});
+			});
+			$('.month-box').mouseleave(function(){
+				$('.month-box').css({'right':'-25vw'});
+				$('.pick-box').css({'right':'5vw'});
+			});			
+
+
+		</script>
